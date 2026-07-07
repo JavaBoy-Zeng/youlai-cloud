@@ -175,7 +175,7 @@ const selectedDictType = reactive({ typeCode: "", typeName: "" }); // 当前选�
 /**
  * 打开字典数据弹窗
  */
-function openDictDialog(row: DictTypePageVO) {
+function openDictDialog(row: Record<string, any>) {
   dictDataDialog.visible = true;
   dictDataDialog.title = "【" + row.name + "】字典数据";
 
@@ -249,12 +249,12 @@ onMounted(() => {
         </el-table-column>
         <el-table-column label="备注" prop="remark" align="center" />
         <el-table-column fixed="right" label="操作" align="center" width="220">
-          <template #default="scope">
+          <template #default="{ row }">
             <el-button
               type="primary"
               link
               size="small"
-              @click.stop="openDictDialog(scope.row)"
+              @click.stop="openDictDialog(row)"
               ><i-ep-Collection />字典数据</el-button
             >
             <el-button
@@ -262,7 +262,7 @@ onMounted(() => {
               type="primary"
               link
               size="small"
-              @click.stop="openDialog(scope.row.id)"
+              @click.stop="openDialog(row.id)"
               ><i-ep-edit />编辑</el-button
             >
             <el-button
@@ -270,7 +270,7 @@ onMounted(() => {
               type="primary"
               link
               size="small"
-              @click.stop="handleDelete(scope.row.id)"
+              @click.stop="handleDelete(row.id)"
               ><i-ep-delete />删除</el-button
             >
           </template>

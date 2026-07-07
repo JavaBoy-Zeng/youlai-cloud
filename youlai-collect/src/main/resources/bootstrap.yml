@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: youlai-collect
+  profiles:
+    active: @profile-active@
+  cloud:
+    nacos:
+      config:
+        enabled: false

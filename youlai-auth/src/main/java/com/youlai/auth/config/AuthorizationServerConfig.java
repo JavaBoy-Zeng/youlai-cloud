@@ -255,7 +255,9 @@ public class AuthorizationServerConfig {
      */
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
+        return AuthorizationServerSettings.builder()
+                .issuer(customSecurityProperties.getIssuerUrl())
+                .build();
     }
 
     /**
@@ -273,6 +275,7 @@ public class AuthorizationServerConfig {
         // 初始化 OAuth2 客户端
         initMallAppClient(registeredClientRepository);
         initMallAdminClient(registeredClientRepository);
+        initMessagingClient(registeredClientRepository);
 
         return registeredClientRepository;
     }
@@ -361,6 +364,7 @@ public class AuthorizationServerConfig {
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .authorizationGrantType(AuthorizationGrantType.PASSWORD) // 密码模式
+                .authorizationGrantType(new AuthorizationGrantType("captcha"))
                 .redirectUri("http://127.0.0.1:8080/authorized")
                 .postLogoutRedirectUri("http://127.0.0.1:8080/logged-out")
                 .scope(OidcScopes.OPENID)
@@ -394,6 +398,8 @@ public class AuthorizationServerConfig {
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .authorizationGrantType(new AuthorizationGrantType("sms_code"))
+                .authorizationGrantType(new AuthorizationGrantType("wx_mini_app"))
                 .redirectUri("http://127.0.0.1:8080/authorized")
                 .postLogoutRedirectUri("http://127.0.0.1:8080/logged-out")
                 .scope(OidcScopes.OPENID)
@@ -402,6 +408,36 @@ public class AuthorizationServerConfig {
                 .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
                 .build();
         registeredClientRepository.save(mallAppClient);
+    }
+
+    /**
+     * 初始化网关 OIDC 登录客户端
+     */
+    private void initMessagingClient(JdbcRegisteredClientRepository registeredClientRepository) {
+
+        String clientId = "messaging-client";
+        String clientSecret = "123456";
+        String clientName = "messaging-client-oidc";
+        String encodeSecret = passwordEncoder().encode(clientSecret);
+
+        RegisteredClient registeredMessagingClient = registeredClientRepository.findByClientId(clientId);
+        String id = registeredMessagingClient != null ? registeredMessagingClient.getId() : UUID.randomUUID().toString();
+
+        RegisteredClient messagingClient = RegisteredClient.withId(id)
+                .clientId(clientId)
+                .clientSecret(encodeSecret)
+                .clientName(clientName)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .redirectUri("http://127.0.0.1:9999/login/oauth2/code/messaging-client-oidc")
+                .postLogoutRedirectUri("http://127.0.0.1:9999/logged-out")
+                .scope(OidcScopes.OPENID)
+                .scope(OidcScopes.PROFILE)
+                .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofDays(1)).build())
+                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+                .build();
+        registeredClientRepository.save(messagingClient);
     }
 
 }

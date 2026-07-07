@@ -1,0 +1,25 @@
+server:
+  port: ${service.port:9500}
+
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${mysql.host:youlai-mysql}:${mysql.port:3306}/youlai_cloud?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true
+    username: ${mysql.username:root}
+    password: ${mysql.password:123456}
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${nacos.server-addr:nacos:8848}
+        namespace: ${nacos.namespace:youlai-cloud}
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+
+springdoc:
+  group-configs:
+    - group: collect
+      paths-to-match: '/**'
+      packages-to-scan: com.youlai.collect.controller

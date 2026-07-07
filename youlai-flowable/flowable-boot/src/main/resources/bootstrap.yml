@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: youlai-flowable
+  profiles:
+    active: @profile-active@
+
+server:
+  port: @service.port@

@@ -13,7 +13,14 @@ interface ImportMetaEnv {
   /** API 基础路径 */
   VITE_APP_BASE_API: string;
   VITE_APP_API_URL: string;
-  VITE_MOCK_DEV_SERVER:boolean;
+  VITE_MOCK_DEV_SERVER: boolean;
+  VITE_OAUTH_ISSUER: string;
+  VITE_OAUTH_BASE_API: string;
+  VITE_OAUTH_CLIENT_ID: string;
+  VITE_OAUTH_CLIENT_SECRET: string;
+  VITE_OAUTH_PASSWORD_CLIENT_ID: string;
+  VITE_OAUTH_PASSWORD_CLIENT_SECRET: string;
+  VITE_OAUTH_REDIRECT_URI: string;
 }
 
 interface ImportMeta {

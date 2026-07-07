@@ -11,6 +11,11 @@
 
     <artifactId>youlai-auth</artifactId>
 
+    <properties>
+        <service.port>9000</service.port>
+        <service.nodeport>32003</service.nodeport>
+    </properties>
+
     <dependencies>
         <!-- Unit Test -->
         <dependency>

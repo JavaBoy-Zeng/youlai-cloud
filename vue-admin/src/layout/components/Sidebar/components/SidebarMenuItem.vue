@@ -94,9 +94,8 @@ function hasOneShowingChild(
       // 过滤不显示的子路由
       return false;
     } else {
-      route.meta!.hidden = false;
       // 临时变量（多个子路由 onlyOneChild 变量是用不上的）
-      onlyOneChild.value = route;
+      onlyOneChild.value = { ...route, meta: route.meta || {} };
       return true;
     }
   });
@@ -143,16 +142,20 @@ function resolvePath(routePath: string) {
       padding: 0 !important;
 
       .sub-el-icon {
-        margin-left: 19px;
+        margin-left: 9px;
       }
     }
 
-    & > span {
+    & > .menu-title-text {
       display: inline-block;
       width: 0;
       height: 0;
       overflow: hidden;
       visibility: hidden;
+    }
+
+    & > .menu-title-short {
+      display: inline-block;
     }
   }
 
@@ -163,7 +166,7 @@ function resolvePath(routePath: string) {
       padding: 0 !important;
 
       .sub-el-icon {
-        margin-left: 19px;
+        margin-left: 9px;
       }
 
       .el-sub-menu__icon-arrow {
@@ -177,12 +180,16 @@ function resolvePath(routePath: string) {
 
     .el-sub-menu {
       & > .el-sub-menu__title {
-        & > span {
+        & > .menu-title-text {
           display: inline-block;
           width: 0;
           height: 0;
           overflow: hidden;
           visibility: hidden;
+        }
+
+        & > .menu-title-short {
+          display: inline-block;
         }
       }
     }

@@ -27,19 +27,182 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: "/",
     component: Layout,
     redirect: "/dashboard",
+    meta: {
+      title: "dashboard",
+      icon: "homepage",
+    },
     children: [
       {
-        path: "dashboard",
-        component: () => import("@/views/dashboard/index.vue"),
-        name: "Dashboard", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
-        // https://cn.vuejs.org/guide/built-ins/keep-alive.html#include-exclude
+        path: "app-builder/apps",
+        component: () => import("@/views/app-builder/apps/index.vue"),
+        name: "AppBuilderApps",
         meta: {
-          title: "dashboard",
-          icon: "homepage",
-          affix: true,
+          title: "应用中心",
+          icon: "project",
           keepAlive: true,
-          alwaysShow: false,
         },
+      },
+      {
+        path: "app-builder/models",
+        component: () => import("@/views/app-builder/models/index.vue"),
+        name: "AppBuilderModels",
+        meta: {
+          title: "数据模型",
+          icon: "tree",
+          keepAlive: true,
+        },
+      },
+      {
+        path: "app-builder/form",
+        component: () => import("@/views/app-builder/form/index.vue"),
+        name: "AppBuilderFormDesigner",
+        meta: {
+          title: "表单设计器",
+          icon: "cascader",
+          keepAlive: true,
+        },
+      },
+      {
+        path: "app-builder/pages",
+        component: () => import("@/views/app-builder/pages/index.vue"),
+        name: "AppBuilderPages",
+        meta: {
+          title: "页面配置",
+          icon: "document",
+          keepAlive: true,
+        },
+      },
+      {
+        path: "app-builder/data",
+        component: () => import("@/views/app-builder/data/index.vue"),
+        name: "AppBuilderData",
+        meta: {
+          title: "业务数据",
+          icon: "dict_item",
+          keepAlive: true,
+        },
+      },
+      {
+        path: "app-builder/extensions",
+        component: () => import("@/views/app-builder/extensions/index.vue"),
+        name: "AppBuilderExtensions",
+        meta: {
+          title: "扩展中心",
+          icon: "api",
+          keepAlive: true,
+        },
+      },
+      {
+        path: "app-builder/runtime/:pageId",
+        component: () => import("@/views/app-builder/runtime/index.vue"),
+        name: "AppBuilderRuntime",
+        meta: {
+          title: "业务页面",
+          icon: "document",
+          hidden: true,
+        },
+      },
+      {
+        path: "workflow/center",
+        component: () => import("@/views/workflow/center/index.vue"),
+        name: "WorkflowCenter",
+        meta: {
+          title: "流程中心",
+          icon: "todolist",
+          keepAlive: true,
+        },
+      },
+      {
+        path: "workflow/designer",
+        component: () => import("@/views/workflow/designer/index.vue"),
+        name: "WorkflowDesigner",
+        meta: {
+          title: "流程设计器",
+          icon: "cascader",
+          keepAlive: false,
+        },
+      },
+      {
+        path: "workflow/tasks",
+        component: () => import("@/views/workflow/tasks/index.vue"),
+        name: "WorkflowTasks",
+        meta: {
+          title: "审批中心",
+          icon: "todolist",
+          keepAlive: true,
+        },
+      },
+      {
+        path: "workflow/detail/:processInstanceId",
+        component: () => import("@/views/workflow/detail/index.vue"),
+        name: "WorkflowDetail",
+        meta: {
+          title: "审批详情",
+          icon: "document",
+          hidden: true,
+        },
+      },
+      {
+        path: "collect",
+        redirect: "/collect/models",
+        name: "Collect",
+        meta: {
+          title: "数据采集",
+          icon: "api",
+          alwaysShow: true,
+        },
+        children: [
+          {
+            path: "models",
+            component: () => import("@/views/collect/console/index.vue"),
+            name: "CollectModels",
+            meta: {
+              title: "采集模型",
+              icon: "tree",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "apis",
+            component: () => import("@/views/collect/console/index.vue"),
+            name: "CollectApis",
+            meta: {
+              title: "采集接口",
+              icon: "api",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "db-sources",
+            component: () => import("@/views/collect/console/index.vue"),
+            name: "CollectDbSources",
+            meta: {
+              title: "DB 数据源",
+              icon: "redis",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "tasks",
+            component: () => import("@/views/collect/console/index.vue"),
+            name: "CollectTasks",
+            meta: {
+              title: "采集任务",
+              icon: "todolist",
+              keepAlive: true,
+            },
+          },
+          {
+            path: "instances",
+            component: () => import("@/views/collect/console/index.vue"),
+            name: "CollectInstances",
+            meta: {
+              title: "执行实例",
+              icon: "monitor",
+              keepAlive: true,
+            },
+          },
+        ],
       },
       {
         path: "401",
@@ -52,10 +215,11 @@ export const constantRoutes: RouteRecordRaw[] = [
         meta: { hidden: true },
       },
       {
-        path: '/OAuth2Redirect',
-        name: 'OAuth2Redirect',
-        component: () => import('@/views/login/OAuth2Redirect.vue')
-      }
+        path: "/OAuth2Redirect",
+        name: "OAuth2Redirect",
+        component: () => import("@/views/login/OAuth2Redirect.vue"),
+        meta: { hidden: true },
+      },
     ],
   },
 ];

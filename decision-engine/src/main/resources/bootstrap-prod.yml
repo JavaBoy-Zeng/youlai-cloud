@@ -1,0 +1,13 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: @nacos-server@
+        namespace: @nacos-namespace@
+      config:
+        server-addr: @nacos-server@
+        namespace: @nacos-namespace@
+        file-extension: @nacos-file-extension@
+        shared-configs[0]:
+          data-id: @nacos-shared-config-data-id@
+          refresh: true

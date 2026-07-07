@@ -33,6 +33,7 @@ declare global {
   const debouncedWatch: typeof import("@vueuse/core")["debouncedWatch"];
   const defineAsyncComponent: typeof import("vue")["defineAsyncComponent"];
   const defineComponent: typeof import("vue")["defineComponent"];
+  const defineStore: typeof import("pinia")["defineStore"];
   const eagerComputed: typeof import("@vueuse/core")["eagerComputed"];
   const effectScope: typeof import("vue")["effectScope"];
   const extendRef: typeof import("@vueuse/core")["extendRef"];
@@ -87,6 +88,7 @@ declare global {
   const shallowReactive: typeof import("vue")["shallowReactive"];
   const shallowReadonly: typeof import("vue")["shallowReadonly"];
   const shallowRef: typeof import("vue")["shallowRef"];
+  const storeToRefs: typeof import("pinia")["storeToRefs"];
   const syncRef: typeof import("@vueuse/core")["syncRef"];
   const syncRefs: typeof import("@vueuse/core")["syncRefs"];
   const templateRef: typeof import("@vueuse/core")["templateRef"];
@@ -176,6 +178,7 @@ declare global {
   const useImage: typeof import("@vueuse/core")["useImage"];
   const useInfiniteScroll: typeof import("@vueuse/core")["useInfiniteScroll"];
   const useIntersectionObserver: typeof import("@vueuse/core")["useIntersectionObserver"];
+  const useI18n: typeof import("vue-i18n")["useI18n"];
   const useInterval: typeof import("@vueuse/core")["useInterval"];
   const useIntervalFn: typeof import("@vueuse/core")["useIntervalFn"];
   const useKeyModifier: typeof import("@vueuse/core")["useKeyModifier"];
@@ -238,6 +241,8 @@ declare global {
   const useTextareaAutosize: typeof import("@vueuse/core")["useTextareaAutosize"];
   const useThrottle: typeof import("@vueuse/core")["useThrottle"];
   const useThrottleFn: typeof import("@vueuse/core")["useThrottleFn"];
+  const useRoute: typeof import("vue-router")["useRoute"];
+  const useRouter: typeof import("vue-router")["useRouter"];
   const useThrottledRefHistory: typeof import("@vueuse/core")["useThrottledRefHistory"];
   const useTimeAgo: typeof import("@vueuse/core")["useTimeAgo"];
   const useTimeout: typeof import("@vueuse/core")["useTimeout"];

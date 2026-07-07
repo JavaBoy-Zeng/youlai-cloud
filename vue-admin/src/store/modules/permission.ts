@@ -35,7 +35,7 @@ const hasPermission = (roles: string[], route: RouteRecordRaw) => {
  * @param roles 用户角色集合
  * @returns 返回用户有权限的异步(动态)路由
  */
-const filterAsyncRoutes = (routes: RouteRecordRaw[], roles: string[]) => {
+const filterAsyncRoutes = (routes: RouteRecordRaw[], roles: string[], isRoot = true) => {
   const asyncRoutes: RouteRecordRaw[] = [];
 
   routes.forEach((route) => {
@@ -57,7 +57,26 @@ const filterAsyncRoutes = (routes: RouteRecordRaw[], roles: string[]) => {
       }
 
       if (tmpRoute.children) {
-        tmpRoute.children = filterAsyncRoutes(tmpRoute.children, roles);
+        tmpRoute.children = filterAsyncRoutes(tmpRoute.children, roles, false);
+      } else if (isRoot && tmpRoute.path.startsWith("/") && tmpRoute.component !== Layout) {
+        tmpRoute.meta = {
+          ...tmpRoute.meta,
+          hidden: tmpRoute.path === "/dashboard" ? true : tmpRoute.meta?.hidden,
+        };
+        tmpRoute.children = [
+          {
+            ...tmpRoute,
+            path: "",
+            name: `${String(tmpRoute.name)}Index`,
+            meta: {
+              ...tmpRoute.meta,
+              hidden: true,
+            },
+          },
+        ];
+        tmpRoute.component = Layout;
+        tmpRoute.name = `${String(tmpRoute.name)}Layout`;
+        tmpRoute.redirect = route.path;
       }
 
       asyncRoutes.push(tmpRoute);

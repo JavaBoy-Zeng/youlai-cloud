@@ -1,6 +1,3 @@
-server:
-  port: 9999
-
 spring:
   main:
     allow-bean-definition-overriding: true
@@ -8,12 +5,12 @@ spring:
     nacos:
       # 注册中心
       discovery:
-        server-addr: http://localhost:8848
-        namespace: youlai-cloud
+        server-addr: @nacos-server@
+        namespace: @nacos-namespace@
       # 配置中心
       config:
-        server-addr: http://localhost:8848
-        namespace: youlai-cloud
+        server-addr: @nacos-server@
+        namespace: @nacos-namespace@
         file-extension: yaml
         shared-configs[0]:
           data-id: youlai-common.yaml
@@ -22,7 +19,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://127.0.0.1:9000
+          issuer-uri: @auth-server-url@
+          jwk-set-uri: @auth-server-url@/oauth2/jwks
       client:
         registration:
           messaging-client-oidc:
@@ -33,11 +31,13 @@ spring:
             client-authentication-method: client_secret_basic
             authorization-grant-type: authorization_code
             # 授权成功后的回调地址，Spring Security Client 使用 Code 换 Token 的地址
-            redirect-uri: http://127.0.0.1:9999/login/oauth2/code/messaging-client-oidc
+            redirect-uri: http://127.0.0.1:@service.port@/login/oauth2/code/messaging-client-oidc
             scope: openid, profile
             client-name: messaging-client-oidc
         provider:
           custom-issuer:
-            issuer-uri: http://127.0.0.1:9000
-            # user-info-uri: http://127.0.0.1:9000/userinfo
-            # user-name-attribute: name
+            authorization-uri: @auth-server-url@/oauth2/authorize
+            token-uri: @auth-server-url@/oauth2/token
+            jwk-set-uri: @auth-server-url@/oauth2/jwks
+            user-info-uri: @auth-server-url@/userinfo
+            user-name-attribute: sub

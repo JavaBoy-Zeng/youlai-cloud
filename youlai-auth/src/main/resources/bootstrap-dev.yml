@@ -1,5 +1,4 @@
 server:
-  port: 9000
   servlet:
     session:
       cookie:
@@ -13,12 +12,12 @@ spring:
     nacos:
       # 注册中心
       discovery:
-        server-addr: http://localhost:8848
-        namespace: youlai-cloud
+        server-addr: @nacos-server@
+        namespace: @nacos-namespace@
       # 配置中心
       config:
-        server-addr: http://localhost:8848
-        namespace: youlai-cloud
+        server-addr: @nacos-server@
+        namespace: @nacos-namespace@
         file-extension: yaml
         shared-configs[0]:
           data-id: youlai-common.yaml
@@ -36,7 +35,7 @@ custom:
     # 设备码验证成功页面
     device-activated-uri: http://127.0.0.1:9527/activated
     # 当前认证服务访问的路径
-    issuer-url: http://127.0.0.1:9000
+    issuer-url: @auth-server-url@
     whitelist-paths:
       - /api/v1/auth/captcha
       - /api/v1/auth/sms_code

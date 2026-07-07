@@ -20,6 +20,7 @@ logs
 
 # Canal
 h2.mv.db
+decision-engine/data/
 **/meta.dat
 
 # https://raw.githubusercontent.com/redhat-developer/vscode-java/master/.gitignore

@@ -16,42 +16,42 @@ public class ApiDocInfoProperties {
     /**
      * API文档标题
      */
-    private String title;
+    private String title = "API Documentation";
 
     /**
      * API文档版本
      */
-    private String version;
+    private String version = "1.0.0";
 
     /**
      * API文档描述
      */
-    private String description;
+    private String description = "";
 
     /**
      * 联系人信息
      */
-    private Contact contact;
+    private Contact contact = new Contact();
 
     /**
      * 许可证信息
      */
-    private License license;
+    private License license = new License();
 
     @Data
     public static class Contact {
         /**
          * 联系人姓名
          */
-        private String name;
+        private String name = "";
         /**
          * 联系人主页
          */
-        private String url;
+        private String url = "";
         /**
          * 联系人邮箱
          */
-        private String email;
+        private String email = "";
 
     }
 
@@ -63,11 +63,11 @@ public class ApiDocInfoProperties {
         /**
          * 许可证名称
          */
-        private String name;
+        private String name = "";
         /**
          * 许可证URL
          */
-        private String url;
+        private String url = "";
     }
 
 }

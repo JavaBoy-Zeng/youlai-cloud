@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: decision-engine
+  profiles:
+    active: @profile-active@
+
+server:
+  port: 18080

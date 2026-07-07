@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Decision Engine</title>
+  <style>
+    :root {
+      --ink: #17211b;
+      --muted: #68756e;
+      --line: #d8e0d9;
+      --paper: #f7f8f3;
+      --panel: #ffffff;
+      --accent: #0f766e;
+      --accent-2: #b42318;
+      --amber: #b7791f;
+      --green: #2f855a;
+      --shadow: 0 16px 38px rgba(24, 37, 30, .08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(15, 118, 110, .07) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(15, 118, 110, .05) 1px, transparent 1px),
+        var(--paper);
+      background-size: 28px 28px;
+      font-family: "Avenir Next", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 14px;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 248px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 22px 18px;
+      background: #12231d;
+      color: #edf5ef;
+      box-shadow: 12px 0 34px rgba(18, 35, 29, .18);
+    }
+
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 28px;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(255,255,255,.22);
+      background: #e6f2ee;
+      color: #0f4c45;
+      font-weight: 800;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .brand small {
+      color: #a9bbb1;
+    }
+
+    .nav {
+      display: grid;
+      gap: 7px;
+    }
+
+    .nav button {
+      width: 100%;
+      min-height: 38px;
+      padding: 0 12px;
+      color: #d8e6de;
+      text-align: left;
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .nav button.active,
+    .nav button:hover {
+      color: #fff;
+      border-color: rgba(255,255,255,.18);
+      background: rgba(255,255,255,.09);
+    }
+
+    .main {
+      padding: 24px;
+      overflow-x: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .topbar h2 {
+      margin: 0 0 4px;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    .topbar p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.86);
+      box-shadow: var(--shadow);
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 24px;
+    }
+
+    .workgrid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 420px;
+      gap: 14px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.92);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-head h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .panel-body {
+      padding: 16px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .input, select, textarea {
+      width: 100%;
+      min-height: 36px;
+      padding: 8px 10px;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      background: #fff;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .btn {
+      min-height: 34px;
+      padding: 0 11px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn.danger {
+      border-color: #f0c7c3;
+      color: var(--accent-2);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px 11px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      background: #f2f5f0;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    tr:hover td {
+      background: #fbfcf7;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 7px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: #fff;
+      font-size: 12px;
+    }
+
+    .tag.ok {
+      border-color: rgba(47,133,90,.28);
+      color: var(--green);
+      background: rgba(47,133,90,.08);
+    }
+
+    .tag.warn {
+      border-color: rgba(183,121,31,.28);
+      color: var(--amber);
+      background: rgba(183,121,31,.08);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .field {
+      display: grid;
+      gap: 5px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .json-result {
+      max-height: 360px;
+      overflow: auto;
+      padding: 12px;
+      margin: 0;
+      border: 1px solid var(--line);
+      background: #10211b;
+      color: #d8efe3;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      max-width: 420px;
+      padding: 12px 14px;
+      color: #fff;
+      background: #12231d;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: .2s ease;
+      z-index: 20;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1100px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: relative;
+        height: auto;
+      }
+      .nav {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .workgrid, .metrics {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">DE</div>
+        <div>
+          <h1>Decision Engine</h1>
+          <small>策略生产与执行台</small>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="active" data-view="dashboard">工作台</button>
+        <button data-view="assets">策略资产</button>
+        <button data-view="tester">策略测试</button>
+        <button data-view="logs">执行日志</button>
+        <button data-view="audit">审计日志</button>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <section id="dashboard-view">
+        <div class="topbar">
+          <div>
+            <h2>工作台</h2>
+            <p>实时观察策略资产、调用、命中和发布情况。</p>
+          </div>
+          <button class="btn primary" onclick="refreshAll()">刷新</button>
+        </div>
+        <div class="metrics" id="metrics"></div>
+        <div class="workgrid">
+          <div class="panel">
+            <div class="panel-head"><h3>结果分布</h3></div>
+            <div class="panel-body"><table id="result-table"></table></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>命中排行</h3></div>
+            <div class="panel-body"><table id="ranking-table"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="assets-view" class="hidden">
+        <div class="topbar">
+          <div>
+            <h2>策略资产</h2>
+            <p>管理场景、变量、规则、规则集、决策流、数据源、模型、评分卡和决策表。</p>
+          </div>
+          <div class="toolbar">
+            <select id="kind-select" onchange="loadAssets()">
+              <option value="scenes">场景</option>
+              <option value="variables">变量</option>
+              <option value="rules">规则</option>
+              <option value="rule-sets">规则集</option>
+              <option value="flows">决策流</option>
+              <option value="data-sources">数据源</option>
+              <option value="models">模型</option>
+              <option value="score-cards">评分卡</option>
+              <option value="decision-tables">决策表</option>
+            </select>
+            <button class="btn primary" onclick="newAsset()">新增</button>
+          </div>
+        </div>
+        <div class="workgrid">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>资产列表</h3>
+              <input class="input" id="asset-keywords" placeholder="搜索名称、编码、标签" oninput="loadAssets()" style="max-width:240px" />
+            </div>
+            <div class="panel-body"><table id="asset-table"></table></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h3 id="asset-form-title">编辑资产</h3>
+              <div class="toolbar">
+                <button class="btn" onclick="publishAsset()">发布</button>
+                <button class="btn" onclick="copyAsset()">复制</button>
+                <button class="btn danger" onclick="deleteAsset()">删除</button>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="form-grid">
+                <input type="hidden" id="asset-id" />
+                <div class="field"><label>名称</label><input class="input" id="asset-name" /></div>
+                <div class="field"><label>编码</label><input class="input" id="asset-code" /></div>
+                <div class="field"><label>分类</label><input class="input" id="asset-category" /></div>
+                <div class="field"><label>状态</label><select id="asset-status"><option>草稿</option><option>已启用</option><option>已发布</option><option>已停用</option></select></div>
+                <div class="field"><label>标签</label><input class="input" id="asset-tags" /></div>
+                <div class="field"><label>负责人</label><input class="input" id="asset-owner" /></div>
+                <div class="field full"><label>备注</label><input class="input" id="asset-remark" /></div>
+                <div class="field full"><label>配置 JSON</label><textarea id="asset-content"></textarea></div>
+              </div>
+              <div class="toolbar" style="margin-top:12px">
+                <button class="btn primary" onclick="saveAsset()">保存</button>
+                <button class="btn" onclick="loadVersions()">版本</button>
+              </div>
+              <pre class="json-result hidden" id="version-result"></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tester-view" class="hidden">
+        <div class="topbar">
+          <div>
+            <h2>策略测试</h2>
+            <p>单笔执行实时决策、规则测试和决策流测试。</p>
+          </div>
+        </div>
+        <div class="workgrid">
+          <div class="panel">
+            <div class="panel-head"><h3>请求</h3></div>
+            <div class="panel-body">
+              <div class="field">
+                <label>测试类型</label>
+                <select id="test-type" onchange="fillSample()">
+                  <option value="decision">实时决策</option>
+                  <option value="rule">规则测试</option>
+                  <option value="flow">决策流测试</option>
+                </select>
+              </div>
+              <div class="field" style="margin-top:10px">
+                <label>请求 JSON</label>
+                <textarea id="test-payload"></textarea>
+              </div>
+              <div class="toolbar" style="margin-top:12px">
+                <button class="btn primary" onclick="runTest()">执行</button>
+                <button class="btn" onclick="fillSample()">样例</button>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>结果</h3></div>
+            <div class="panel-body"><pre class="json-result" id="test-result">{}</pre></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="logs-view" class="hidden">
+        <div class="topbar"><div><h2>执行日志</h2><p>查看最近一百条实时决策执行记录。</p></div><button class="btn primary" onclick="loadExecutionLogs()">刷新</button></div>
+        <div class="panel"><div class="panel-body"><table id="execution-log-table"></table></div></div>
+      </section>
+
+      <section id="audit-view" class="hidden">
+        <div class="topbar"><div><h2>审计日志</h2><p>查看最近一百条策略资产操作记录。</p></div><button class="btn primary" onclick="loadAuditLogs()">刷新</button></div>
+        <div class="panel"><div class="panel-body"><table id="audit-log-table"></table></div></div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const state = { assets: [], selected: null };
+    const labels = { SCENE: "场景", VARIABLE: "变量", RULE: "规则", RULE_SET: "规则集", FLOW: "决策流", DATA_SOURCE: "数据源", MODEL: "模型", SCORE_CARD: "评分卡", DECISION_TABLE: "决策表" };
+    const API_PREFIX = "/api/v1/decision-engine";
+
+    document.querySelectorAll(".nav button").forEach(btn => {
+      btn.addEventListener("click", () => switchView(btn.dataset.view));
+    });
+
+    async function api(url, options = {}) {
+      const res = await fetch(url, { headers: { "Content-Type": "application/json" }, ...options });
+      const payload = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error((payload && (payload.msg || payload.message)) || res.statusText);
+      }
+      if (res.status === 204) return null;
+      if (payload && Object.prototype.hasOwnProperty.call(payload, "code")) {
+        if (payload.code !== "00000") throw new Error(payload.msg || "请求失败");
+        return payload.data;
+      }
+      return payload;
+    }
+
+    function toast(message) {
+      const el = document.getElementById("toast");
+      el.textContent = message;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 2200);
+    }
+
+    function pretty(value) {
+      return JSON.stringify(value, null, 2);
+    }
+
+    function switchView(view) {
+      document.querySelectorAll(".nav button").forEach(btn => btn.classList.toggle("active", btn.dataset.view === view));
+      ["dashboard", "assets", "tester", "logs", "audit"].forEach(name => {
+        document.getElementById(`${name}-view`).classList.toggle("hidden", name !== view);
+      });
+      if (view === "dashboard") loadDashboard();
+      if (view === "assets") loadAssets();
+      if (view === "tester") fillSample();
+      if (view === "logs") loadExecutionLogs();
+      if (view === "audit") loadAuditLogs();
+    }
+
+    async function loadDashboard() {
+      const data = await api(`${API_PREFIX}/dashboard/overview`);
+      const cards = [
+        ["资产总数", data.artifactCount],
+        ["累计调用", data.totalCalls],
+        ["近期成功率", `${Math.round((data.recentSuccessRate || 0) * 100)}%`],
+        ["平均耗时", `${data.avgElapsedMs || 0}ms`],
+        ["异常调用", data.exceptionCalls]
+      ];
+      document.getElementById("metrics").innerHTML = cards.map(([label, value]) => `<div class="metric"><span>${label}</span><strong>${value}</strong></div>`).join("");
+      document.getElementById("result-table").innerHTML = `<tr><th>结果</th><th>数量</th></tr>` + Object.entries(data.resultDistribution || {}).map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("");
+      document.getElementById("ranking-table").innerHTML = `<tr><th>规则</th><th>命中</th></tr>` + (data.hitRanking || []).map(item => `<tr><td>${item.ruleCode}</td><td>${item.hitCount}</td></tr>`).join("");
+    }
+
+    async function loadAssets() {
+      const kind = document.getElementById("kind-select").value;
+      const keywords = document.getElementById("asset-keywords").value;
+      state.assets = await api(`${API_PREFIX}/artifacts/${kind}?keywords=${encodeURIComponent(keywords)}`);
+      document.getElementById("asset-table").innerHTML = `<tr><th>名称</th><th>编码</th><th>类型</th><th>状态</th><th>版本</th></tr>` + state.assets.map(item => `
+        <tr onclick="selectAsset(${item.id})" style="cursor:pointer">
+          <td>${item.name}</td>
+          <td>${item.code}</td>
+          <td>${labels[item.kind] || item.kind}</td>
+          <td><span class="tag ${item.status === "已发布" || item.status === "PUBLISHED" ? "ok" : "warn"}">${item.status}</span></td>
+          <td>v${item.versionNo}</td>
+        </tr>
+      `).join("");
+      if (state.assets.length && !state.selected) selectAsset(state.assets[0].id);
+    }
+
+    function selectAsset(id) {
+      const item = state.assets.find(asset => asset.id === id);
+      if (!item) return;
+      state.selected = item;
+      document.getElementById("asset-form-title").textContent = `${labels[item.kind] || item.kind} / ${item.name}`;
+      document.getElementById("asset-id").value = item.id || "";
+      document.getElementById("asset-name").value = item.name || "";
+      document.getElementById("asset-code").value = item.code || "";
+      document.getElementById("asset-category").value = item.category || "";
+      document.getElementById("asset-status").value = item.status || "草稿";
+      document.getElementById("asset-tags").value = item.tags || "";
+      document.getElementById("asset-owner").value = item.owner || "";
+      document.getElementById("asset-remark").value = item.remark || "";
+      document.getElementById("asset-content").value = pretty(item.content || {});
+      document.getElementById("version-result").classList.add("hidden");
+    }
+
+    function newAsset() {
+      state.selected = null;
+      document.getElementById("asset-form-title").textContent = "新增资产";
+      ["asset-id", "asset-name", "asset-code", "asset-category", "asset-tags", "asset-owner", "asset-remark"].forEach(id => document.getElementById(id).value = "");
+      document.getElementById("asset-status").value = "草稿";
+      document.getElementById("asset-content").value = "{}";
+    }
+
+    function readAssetForm() {
+      return {
+        code: document.getElementById("asset-code").value.trim(),
+        name: document.getElementById("asset-name").value.trim(),
+        category: document.getElementById("asset-category").value.trim(),
+        status: document.getElementById("asset-status").value,
+        tags: document.getElementById("asset-tags").value.trim(),
+        owner: document.getElementById("asset-owner").value.trim(),
+        remark: document.getElementById("asset-remark").value.trim(),
+        content: JSON.parse(document.getElementById("asset-content").value || "{}")
+      };
+    }
+
+    async function saveAsset() {
+      try {
+        const id = document.getElementById("asset-id").value;
+        const payload = readAssetForm();
+        if (id) {
+          await api(`${API_PREFIX}/artifacts/${id}`, { method: "PUT", body: JSON.stringify(payload) });
+        } else {
+          await api(`${API_PREFIX}/artifacts/${document.getElementById("kind-select").value}`, { method: "POST", body: JSON.stringify(payload) });
+        }
+        toast("保存成功");
+        state.selected = null;
+        await loadAssets();
+      } catch (err) {
+        toast(err.message);
+      }
+    }
+
+    async function publishAsset() {
+      if (!state.selected) return toast("请先选择资产");
+      await api(`${API_PREFIX}/artifacts/${state.selected.id}/publish`, { method: "POST", body: JSON.stringify({ environment: "PROD", publishBy: "console", remark: "控制台发布" }) });
+      toast("发布成功");
+      state.selected = null;
+      await loadAssets();
+    }
+
+    async function copyAsset() {
+      if (!state.selected) return toast("请先选择资产");
+      await api(`${API_PREFIX}/artifacts/${state.selected.id}/copy`, { method: "POST" });
+      toast("复制成功");
+      state.selected = null;
+      await loadAssets();
+    }
+
+    async function deleteAsset() {
+      if (!state.selected) return toast("请先选择资产");
+      if (!confirm(`确认删除 ${state.selected.name}？`)) return;
+      await api(`${API_PREFIX}/artifacts/${state.selected.id}`, { method: "DELETE" });
+      toast("删除成功");
+      state.selected = null;
+      newAsset();
+      await loadAssets();
+    }
+
+    async function loadVersions() {
+      if (!state.selected) return toast("请先选择资产");
+      const versions = await api(`${API_PREFIX}/artifacts/${state.selected.id}/versions`);
+      const el = document.getElementById("version-result");
+      el.textContent = pretty(versions);
+      el.classList.remove("hidden");
+    }
+
+    function fillSample() {
+      const type = document.getElementById("test-type").value;
+      const samples = {
+        decision: { sceneCode: "trade_risk", eventId: "EVT202606180001", userId: "10001", params: { orderAmount: 12000, ip: "127.0.0.1", deviceId: "D001", city: "重庆" } },
+        rule: { ruleCode: "RISK_001", params: { orderAmount: 12000, city: "重庆" } },
+        flow: { flowCode: "trade_risk_flow", eventId: "FLOW202606180001", userId: "10001", params: { orderAmount: 12000, city: "重庆" } }
+      };
+      document.getElementById("test-payload").value = pretty(samples[type]);
+    }
+
+    async function runTest() {
+      try {
+        const type = document.getElementById("test-type").value;
+        const urls = { decision: `${API_PREFIX}/decision/execute`, rule: `${API_PREFIX}/rule/test`, flow: `${API_PREFIX}/flow/test` };
+        const result = await api(urls[type], { method: "POST", body: document.getElementById("test-payload").value });
+        document.getElementById("test-result").textContent = pretty(result);
+        toast("执行完成");
+      } catch (err) {
+        toast(err.message);
+      }
+    }
+
+    async function loadExecutionLogs() {
+      const logs = await api(`${API_PREFIX}/logs/executions`);
+      document.getElementById("execution-log-table").innerHTML = `<tr><th>时间</th><th>场景</th><th>结果</th><th>等级</th><th>分数</th><th>耗时</th><th>Trace</th></tr>` + logs.map(log => `
+        <tr><td>${log.createTime || ""}</td><td>${log.sceneCode}</td><td>${log.decisionResult}</td><td>${log.riskLevel}</td><td>${log.score}</td><td>${log.elapsedMs}ms</td><td>${log.traceId}</td></tr>
+      `).join("");
+    }
+
+    async function loadAuditLogs() {
+      const logs = await api(`${API_PREFIX}/logs/audits`);
+      document.getElementById("audit-log-table").innerHTML = `<tr><th>时间</th><th>动作</th><th>类型</th><th>编码</th><th>操作人</th></tr>` + logs.map(log => `
+        <tr><td>${log.createTime || ""}</td><td>${log.action}</td><td>${log.targetKind || ""}</td><td>${log.targetCode || ""}</td><td>${log.operator || ""}</td></tr>
+      `).join("");
+    }
+
+    function refreshAll() {
+      loadDashboard();
+      toast("已刷新");
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

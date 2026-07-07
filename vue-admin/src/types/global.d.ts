@@ -1,5 +1,15 @@
 declare global {
   /**
+   * 通用弹窗状态
+   */
+  type DialogType = {
+    visible: boolean;
+    title?: string;
+    type?: string;
+    [key: string]: unknown;
+  };
+
+  /**
    * 分页查询参数
    */
   interface PageQuery {
@@ -81,6 +91,19 @@ declare global {
     label: string;
     /** 子列表  */
     children?: OptionType[];
+  }
+}
+
+declare module "vue-router" {
+  interface RouteMeta {
+    title?: string;
+    icon?: string;
+    hidden?: boolean;
+    affix?: boolean;
+    keepAlive?: boolean;
+    alwaysShow?: boolean;
+    breadcrumb?: boolean;
+    roles?: string[];
   }
 }
 export {};

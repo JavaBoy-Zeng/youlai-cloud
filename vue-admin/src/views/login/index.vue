@@ -9,7 +9,7 @@
         :inactive-icon="Sunny"
         @change="toggleTheme"
       />
-      <lang-select class="ml-2 cursor-pointer"/>
+      <lang-select class="ml-2 cursor-pointer" />
     </div>
     <!-- 登录表单 -->
     <el-card class="!border-none !bg-transparent !rounded-4% w-100 <sm:w-85">
@@ -27,7 +27,7 @@
         <!-- 用户名 -->
         <el-form-item prop="username">
           <div class="flex-y-center w-full">
-            <svg-icon icon-class="user" class="mx-2"/>
+            <svg-icon icon-class="user" class="mx-2" />
             <el-input
               ref="username"
               v-model="loginData.username"
@@ -48,7 +48,7 @@
           <el-form-item prop="password">
             <div class="flex-y-center w-full">
               <el-icon class="mx-2">
-                <Lock/>
+                <Lock />
               </el-icon>
               <el-input
                 v-model="loginData.password"
@@ -68,7 +68,7 @@
         <!-- 验证码 -->
         <el-form-item prop="captchaCode">
           <div class="flex-y-center w-full">
-            <svg-icon icon-class="captcha" class="mx-2"/>
+            <svg-icon icon-class="captcha" class="mx-2" />
             <el-input
               v-model="loginData.captchaCode"
               auto-complete="off"
@@ -92,7 +92,7 @@
           size="large"
           class="w-full"
           @click.prevent="handleLogin"
-        >{{ $t("login.login") }}
+          >{{ $t("login.login") }}
         </el-button>
 
         <el-button
@@ -100,7 +100,7 @@
           size="large"
           class="w-full"
           @click.prevent="pushToOAuth2Authorize"
-        >OAuth2Login
+          >OAuth2Login
         </el-button>
 
         <!-- 账号密码提示 -->
@@ -123,22 +123,21 @@
 </template>
 
 <script setup lang="ts">
-import {useSettingsStore, useUserStore, useAppStore} from "@/store";
-import {getCaptchaApi, oauth2Login} from "@/api/auth";
-import {LoginData} from "@/api/auth/types";
-import {Sunny, Moon} from "@element-plus/icons-vue";
-import {LocationQuery, LocationQueryValue, useRoute} from "vue-router";
+import { useSettingsStore, useUserStore, useAppStore } from "@/store";
+import { getCaptchaApi } from "@/api/auth";
+import { LoginData } from "@/api/auth/types";
+import { Sunny, Moon } from "@element-plus/icons-vue";
+import { LocationQuery, LocationQueryValue, useRoute } from "vue-router";
 import router from "@/router";
 import defaultSettings from "@/settings";
-import {ThemeEnum} from "@/enums/ThemeEnum";
-import {getQueryParam} from '@/utils/index'
+import { ThemeEnum } from "@/enums/ThemeEnum";
 // Stores
 const userStore = useUserStore();
 const settingsStore = useSettingsStore();
 const appStore = useAppStore();
 
 // Internationalization
-const {t} = useI18n();
+const { t } = useI18n();
 
 // Reactive states
 const isDark = ref(settingsStore.theme === ThemeEnum.DARK);
@@ -147,7 +146,7 @@ const loading = ref(false); // 按钮loading
 const isCapslock = ref(false); // 是否大写锁定
 const captchaBase64 = ref(); // 验证码图片Base64字符串
 const loginFormRef = ref(ElForm); // 登录表单ref
-const {height} = useWindowSize();
+const { height } = useWindowSize();
 
 const loginData = ref<LoginData>({
   username: "admin",
@@ -192,7 +191,7 @@ const loginRules = computed(() => {
  * 获取验证码
  */
 function getCaptcha() {
-  getCaptchaApi().then(({data}) => {
+  getCaptchaApi().then(({ data }) => {
     loginData.value.captchaId = data.captchaId;
     captchaBase64.value = data.captchaBase64;
   });
@@ -207,24 +206,32 @@ function handleLogin() {
   loginFormRef.value.validate((valid: boolean) => {
     if (valid) {
       loading.value = true;
-      oauth2Login(loginData.value).then((res) => {
-        console.log('登录回调', res)
-        const target = getQueryParam("target");
-        if (target) {
-          window.location.href = target
-        } else {
-          router.push("/");
-        }
-      }).catch(() => {
+      userStore
+        .login(loginData.value)
+        .then(() => {
+          const query: LocationQuery = route.query;
+          const redirect = (query.redirect as LocationQueryValue) ?? "/";
+          const otherQueryParams = Object.keys(query).reduce(
+            (acc: any, cur: string) => {
+              if (cur !== "redirect") {
+                acc[cur] = query[cur];
+              }
+              return acc;
+            },
+            {}
+          );
 
-      }).finally(() => {
-        loading.value = false;
-      });
-
+          router.push({ path: redirect, query: otherQueryParams });
+        })
+        .catch(() => {
+          getCaptcha();
+        })
+        .finally(() => {
+          loading.value = false;
+        });
     }
   });
 }
-
 
 /**
  * 跳转OAuth2授权页面，如果未登录，跳转OAuth2登录页面

@@ -2,4 +2,7 @@ spring:
   application:
     name: youlai-auth
   profiles:
-    active: dev
+    active: @profile-active@
+
+server:
+  port: @service.port@

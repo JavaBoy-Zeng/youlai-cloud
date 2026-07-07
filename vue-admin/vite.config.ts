@@ -51,9 +51,29 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           changeOrigin: true,
           // 接口地址
           target: env.VITE_APP_API_URL,
+          configure: (proxy) => {
+            proxy.on("proxyReq", (proxyReq) => {
+              proxyReq.removeHeader("origin");
+            });
+          },
           rewrite: (path) =>
             path.replace(new RegExp("^" + env.VITE_APP_BASE_API), ""),
         },
+        ...(env.VITE_OAUTH_BASE_API && env.VITE_OAUTH_ISSUER
+          ? {
+              [env.VITE_OAUTH_BASE_API]: {
+                changeOrigin: true,
+                target: env.VITE_OAUTH_ISSUER,
+                configure: (proxy) => {
+                  proxy.on("proxyReq", (proxyReq) => {
+                    proxyReq.removeHeader("origin");
+                  });
+                },
+                rewrite: (path) =>
+                  path.replace(new RegExp("^" + env.VITE_OAUTH_BASE_API), ""),
+              },
+            }
+          : {}),
       },
     },
     plugins: [

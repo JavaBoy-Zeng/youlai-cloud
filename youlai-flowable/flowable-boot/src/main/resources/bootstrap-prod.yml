@@ -1,0 +1,21 @@
+spring:
+  main:
+    allow-circular-references: true
+  mvc:
+    path-match:
+      matching-strategy: ant_path_matcher
+  cloud:
+    nacos:
+      discovery:
+        server-addr: http://nacos:8848
+        namespace: youlai-cloud
+      config:
+        server-addr: http://nacos:8848
+        namespace: youlai-cloud
+        file-extension: yaml
+        shared-configs[0]:
+          data-id: youlai-common.yaml
+          refresh: true
+flowable:
+  database-schema-update: false
+  async-executor-activate: true

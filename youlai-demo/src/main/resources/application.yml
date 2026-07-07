@@ -1,0 +1,41 @@
+server:
+  port: ${DEMO_SERVER_PORT:9400}
+
+spring:
+  application:
+    name: youlai-demo
+  ai:
+    model:
+      chat: ${SPRING_AI_MODEL_CHAT:none}
+    openai:
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+      api-key: ${OPENAI_API_KEY:}
+      chat:
+        options:
+          model: ${OPENAI_CHAT_MODEL:gpt-4.1-mini}
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DEMO_DB_HOST:127.0.0.1}:${DEMO_DB_PORT:3306}/${DEMO_DB_NAME:youlai_demo}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${DEMO_DB_USERNAME:root}
+    password: ${DEMO_DB_PASSWORD:!QAZ2wsx}
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: youlai-demo

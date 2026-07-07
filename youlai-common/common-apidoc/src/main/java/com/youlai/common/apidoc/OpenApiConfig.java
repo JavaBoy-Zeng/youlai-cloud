@@ -46,6 +46,12 @@ public class OpenApiConfig {
      */
     @Bean
     public OpenAPI openAPI() {
+        ApiDocInfoProperties.Contact contact = apiDocInfoProperties.getContact() == null
+                ? new ApiDocInfoProperties.Contact()
+                : apiDocInfoProperties.getContact();
+        ApiDocInfoProperties.License license = apiDocInfoProperties.getLicense() == null
+                ? new ApiDocInfoProperties.License()
+                : apiDocInfoProperties.getLicense();
         return new OpenAPI()
                 .components(new Components()
                         .addSecuritySchemes(HttpHeaders.AUTHORIZATION,
@@ -74,12 +80,12 @@ public class OpenApiConfig {
                         .version(apiDocInfoProperties.getVersion())
                         .description(apiDocInfoProperties.getDescription())
                         .contact(new Contact()
-                                .name(apiDocInfoProperties.getContact().getName())
-                                .url(apiDocInfoProperties.getContact().getUrl())
-                                .email(apiDocInfoProperties.getContact().getEmail())
+                                .name(contact.getName())
+                                .url(contact.getUrl())
+                                .email(contact.getEmail())
                         )
-                        .license(new License().name(apiDocInfoProperties.getLicense().getName())
-                                .url(apiDocInfoProperties.getLicense().getUrl())
+                        .license(new License().name(license.getName())
+                                .url(license.getUrl())
                         ));
     }
 

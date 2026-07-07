@@ -1,20 +1,39 @@
-server:
-  port: 9999
-
 spring:
   main:
     allow-bean-definition-overriding: true
-  application:
-    name: youlai-gateway
   cloud:
     nacos:
       discovery:
-        server-addr: http://localhost:8848
-        namespace: youlai-cloud
+        server-addr: @nacos-server@
+        namespace: @nacos-namespace@
       config:
-        server-addr: http://localhost:8848
+        server-addr: @nacos-server@
         file-extension: yaml
-        namespace: youlai-cloud
+        namespace: @nacos-namespace@
         shared-configs[0]:
           data-id: youlai-common.yaml
           refresh: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: @auth-server-url@
+          jwk-set-uri: @auth-server-url@/oauth2/jwks
+      client:
+        registration:
+          messaging-client-oidc:
+            provider: custom-issuer
+            client-id: messaging-client
+            client-secret: 123456
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: authorization_code
+            redirect-uri: http://127.0.0.1:@service.port@/login/oauth2/code/messaging-client-oidc
+            scope: openid, profile
+            client-name: messaging-client-oidc
+        provider:
+          custom-issuer:
+            authorization-uri: @auth-server-url@/oauth2/authorize
+            token-uri: @auth-server-url@/oauth2/token
+            jwk-set-uri: @auth-server-url@/oauth2/jwks
+            user-info-uri: @auth-server-url@/userinfo
+            user-name-attribute: sub

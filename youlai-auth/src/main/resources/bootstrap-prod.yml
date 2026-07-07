@@ -1,6 +1,3 @@
-server:
-  port: 9000
-
 spring:
   mvc:
     path-match:
@@ -9,13 +6,17 @@ spring:
     nacos:
       # 注册中心
       discovery:
-        server-addr: http://localhost:8848
-        namespace: youlai-cloud
+        server-addr: @nacos-server@
+        namespace: @nacos-namespace@
       # 配置中心
       config:
-        server-addr: http://localhost:8848
-        namespace: youlai-cloud
+        server-addr: @nacos-server@
+        namespace: @nacos-namespace@
         file-extension: yaml
         shared-configs[0]:
           data-id: youlai-common.yaml
           refresh: true
+
+custom:
+  security:
+    issuer-url: @auth-server-url@

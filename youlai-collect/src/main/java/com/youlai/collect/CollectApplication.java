@@ -12,6 +12,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @MapperScan("com.youlai.collect.mapper")
 public class CollectApplication {
 
+    /**
+     * 启动数据采集服务。
+     */
     public static void main(String[] args) {
         SpringApplication.run(CollectApplication.class, args);
     }

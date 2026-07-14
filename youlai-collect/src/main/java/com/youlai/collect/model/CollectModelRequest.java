@@ -14,6 +14,7 @@ public class CollectModelRequest {
     private String modelName;
     @NotBlank(message = "模型编码不能为空")
     private String modelCode;
+    private Long targetDataSourceId;
     private String targetTableName;
     private String status;
     private String remark;

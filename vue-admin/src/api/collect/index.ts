@@ -3,9 +3,10 @@ import { AxiosPromise } from "axios";
 import type {
   CollectApi,
   CollectDashboard,
-  CollectDbSource,
+  CollectDataSource,
   CollectInstance,
   CollectModel,
+  CollectModelRule,
   CollectQualityReport,
   CollectQuery,
   CollectRawData,
@@ -52,16 +53,32 @@ export function testCollectApi(id: number): AxiosPromise<Record<string, any>> {
   return request({ url: `${baseUrl}/apis/${id}/test`, method: "post" });
 }
 
-export function getCollectDbSources(params: CollectQuery): AxiosPromise<PageResult<CollectDbSource[]>> {
-  return request({ url: `${baseUrl}/db-sources`, method: "get", params });
+export function getCollectModelRules(params: CollectQuery): AxiosPromise<PageResult<CollectModelRule[]>> {
+  return request({ url: `${baseUrl}/model-rules`, method: "get", params });
 }
 
-export function saveCollectDbSource(data: CollectDbSource, id?: number) {
-  return request({ url: `${baseUrl}/db-sources${id ? `/${id}` : ""}`, method: id ? "put" : "post", data });
+export function getCollectModelRule(id: number): AxiosPromise<CollectModelRule> {
+  return request({ url: `${baseUrl}/model-rules/${id}`, method: "get" });
 }
 
-export function testCollectDbSource(id: number): AxiosPromise<Record<string, any>> {
-  return request({ url: `${baseUrl}/db-sources/${id}/test`, method: "post" });
+export function saveCollectModelRule(data: CollectModelRule, id?: number) {
+  return request({ url: `${baseUrl}/model-rules${id ? `/${id}` : ""}`, method: id ? "put" : "post", data });
+}
+
+export function updateCollectModelRuleStatus(id: number, enabled: boolean) {
+  return request({ url: `${baseUrl}/model-rules/${id}/${enabled ? "enable" : "disable"}`, method: "post" });
+}
+
+export function getCollectDataSources(params: CollectQuery): AxiosPromise<PageResult<CollectDataSource[]>> {
+  return request({ url: `${baseUrl}/data-sources`, method: "get", params });
+}
+
+export function saveCollectDataSource(data: CollectDataSource, id?: number) {
+  return request({ url: `${baseUrl}/data-sources${id ? `/${id}` : ""}`, method: id ? "put" : "post", data });
+}
+
+export function testCollectDataSource(id: number): AxiosPromise<Record<string, any>> {
+  return request({ url: `${baseUrl}/data-sources/${id}/test`, method: "post" });
 }
 
 export function getCollectTasks(params: CollectQuery): AxiosPromise<PageResult<CollectTask[]>> {

@@ -11,6 +11,9 @@ import java.util.List;
 public class CollectModelDetail extends CollectModel {
     private List<CollectModelField> fields;
 
+    /**
+     * 根据模型主表和字段列表组装模型详情对象。
+     */
     public static CollectModelDetail of(CollectModel model, List<CollectModelField> fields) {
         CollectModelDetail detail = new CollectModelDetail();
         BeanUtils.copyProperties(model, detail);

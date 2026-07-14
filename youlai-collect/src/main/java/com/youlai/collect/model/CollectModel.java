@@ -15,6 +15,7 @@ public class CollectModel extends BaseEntity {
     private Long id;
     private String modelName;
     private String modelCode;
+    private Long targetDataSourceId;
     private String targetTableName;
     private String status;
     private Integer fieldCount;

@@ -16,6 +16,7 @@ public class CollectApi extends BaseEntity {
     private String apiName;
     private String apiCode;
     private String collectType;
+    private Long sourceDataSourceId;
     private String sourceName;
     private Integer timeoutSeconds;
     private Integer maxFetchCount;

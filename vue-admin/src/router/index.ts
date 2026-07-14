@@ -143,68 +143,6 @@ export const constantRoutes: RouteRecordRaw[] = [
         },
       },
       {
-        path: "collect",
-        redirect: "/collect/models",
-        name: "Collect",
-        meta: {
-          title: "数据采集",
-          icon: "api",
-          alwaysShow: true,
-        },
-        children: [
-          {
-            path: "models",
-            component: () => import("@/views/collect/console/index.vue"),
-            name: "CollectModels",
-            meta: {
-              title: "采集模型",
-              icon: "tree",
-              keepAlive: true,
-            },
-          },
-          {
-            path: "apis",
-            component: () => import("@/views/collect/console/index.vue"),
-            name: "CollectApis",
-            meta: {
-              title: "采集接口",
-              icon: "api",
-              keepAlive: true,
-            },
-          },
-          {
-            path: "db-sources",
-            component: () => import("@/views/collect/console/index.vue"),
-            name: "CollectDbSources",
-            meta: {
-              title: "DB 数据源",
-              icon: "redis",
-              keepAlive: true,
-            },
-          },
-          {
-            path: "tasks",
-            component: () => import("@/views/collect/console/index.vue"),
-            name: "CollectTasks",
-            meta: {
-              title: "采集任务",
-              icon: "todolist",
-              keepAlive: true,
-            },
-          },
-          {
-            path: "instances",
-            component: () => import("@/views/collect/console/index.vue"),
-            name: "CollectInstances",
-            meta: {
-              title: "执行实例",
-              icon: "monitor",
-              keepAlive: true,
-            },
-          },
-        ],
-      },
-      {
         path: "401",
         component: () => import("@/views/error-page/401.vue"),
         meta: { hidden: true },

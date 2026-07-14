@@ -17,6 +17,7 @@ public class CollectTask extends BaseEntity {
     private Long id;
     private String taskName;
     private String taskCode;
+    private Long ruleId;
     private Long modelId;
     private Long apiId;
     private String scheduleType;

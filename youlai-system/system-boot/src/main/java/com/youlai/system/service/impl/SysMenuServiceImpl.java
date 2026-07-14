@@ -21,7 +21,6 @@ import com.youlai.system.model.vo.RouteVO;
 import com.youlai.system.service.SysMenuService;
 import com.youlai.system.service.SysRoleMenuService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -165,8 +164,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     private RouteVO toRouteVo(RouteBO routeBO) {
         RouteVO routeVO = new RouteVO();
-        String routeName = StringUtils.capitalize(StrUtil.toCamelCase(routeBO.getPath(), '-'));  // 路由 name 需要驼峰，首字母大写
-        routeVO.setName(routeName); // 根据name路由跳转 this.$router.push({name:xxx})
+        routeVO.setName("Menu" + routeBO.getId()); // 路由 name 需要全局唯一，否则同名子菜单会覆盖路由
         routeVO.setPath(routeBO.getPath()); // 根据path路由跳转 this.$router.push({path:xxx})
         routeVO.setRedirect(routeBO.getRedirect());
         routeVO.setComponent(routeBO.getComponent());

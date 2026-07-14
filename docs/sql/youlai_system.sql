@@ -250,13 +250,6 @@ INSERT INTO `sys_menu` VALUES (96, 90, 1, '数据源', 'data-sources', 'decision
 INSERT INTO `sys_menu` VALUES (97, 90, 1, '模型', 'models', 'decision-engine/console/index', NULL, 'project', 7, 1, NULL, '0,90', NULL, 1, NOW(), NOW());
 INSERT INTO `sys_menu` VALUES (98, 90, 1, '评分卡', 'score-cards', 'decision-engine/console/index', NULL, 'number', 8, 1, NULL, '0,90', NULL, 1, NOW(), NOW());
 INSERT INTO `sys_menu` VALUES (99, 90, 1, '决策表', 'decision-tables', 'decision-engine/console/index', NULL, 'nested', 9, 1, NULL, '0,90', NULL, 1, NOW(), NOW());
-INSERT INTO `sys_menu` VALUES (100, 0, 2, '数据采集', '/collect', 'Layout', NULL, 'api', 7, 1, '/collect/models', '0', 1, NULL, NOW(), NOW());
-INSERT INTO `sys_menu` VALUES (101, 100, 1, '采集模型', 'models', 'collect/console/index', NULL, 'tree', 1, 1, NULL, '0,100', NULL, 1, NOW(), NOW());
-INSERT INTO `sys_menu` VALUES (102, 100, 1, '采集接口', 'apis', 'collect/console/index', NULL, 'api', 2, 1, NULL, '0,100', NULL, 1, NOW(), NOW());
-INSERT INTO `sys_menu` VALUES (103, 100, 1, 'DB 数据源', 'db-sources', 'collect/console/index', NULL, 'redis', 3, 1, NULL, '0,100', NULL, 1, NOW(), NOW());
-INSERT INTO `sys_menu` VALUES (104, 100, 1, '采集任务', 'tasks', 'collect/console/index', NULL, 'todolist', 4, 1, NULL, '0,100', NULL, 1, NOW(), NOW());
-INSERT INTO `sys_menu` VALUES (105, 100, 1, '执行实例', 'instances', 'collect/console/index', NULL, 'monitor', 5, 1, NULL, '0,100', NULL, 1, NOW(), NOW());
-
 -- ----------------------------
 -- Table structure for sys_role
 -- ----------------------------

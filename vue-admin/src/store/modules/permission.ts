@@ -6,6 +6,24 @@ import { listRoutes } from "@/api/system/menu";
 const modules = import.meta.glob("../../views/**/**.vue");
 const Layout = () => import("@/layout/index.vue");
 
+function resolveRoutePath(parentPath: string, routePath: string) {
+  if (!routePath) {
+    return parentPath || "/";
+  }
+  if (routePath.startsWith("/") || /^(https?:|mailto:|tel:)/.test(routePath)) {
+    return routePath;
+  }
+  return `${parentPath.replace(/\/$/, "")}/${routePath.replace(/^\//, "")}`;
+}
+
+function uniqueRouteName(routePath: string) {
+  const normalized = routePath
+    .replace(/^\/+/, "")
+    .replace(/[^a-zA-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return `Route_${normalized || "root"}`;
+}
+
 /**
  * Use meta.role to determine if the current user has permission
  *
@@ -35,14 +53,13 @@ const hasPermission = (roles: string[], route: RouteRecordRaw) => {
  * @param roles 用户角色集合
  * @returns 返回用户有权限的异步(动态)路由
  */
-const filterAsyncRoutes = (routes: RouteRecordRaw[], roles: string[], isRoot = true) => {
+const filterAsyncRoutes = (routes: RouteRecordRaw[], roles: string[], isRoot = true, parentPath = "") => {
   const asyncRoutes: RouteRecordRaw[] = [];
 
   routes.forEach((route) => {
     const tmpRoute = { ...route }; // ES6扩展运算符复制新对象
-    if (!route.name) {
-      tmpRoute.name = route.path;
-    }
+    const fullPath = resolveRoutePath(parentPath, String(tmpRoute.path || ""));
+    tmpRoute.name = uniqueRouteName(fullPath);
     // 判断用户(角色)是否有该路由的访问权限
     if (hasPermission(roles, tmpRoute)) {
       if (tmpRoute.component?.toString() == "Layout") {
@@ -57,7 +74,7 @@ const filterAsyncRoutes = (routes: RouteRecordRaw[], roles: string[], isRoot = t
       }
 
       if (tmpRoute.children) {
-        tmpRoute.children = filterAsyncRoutes(tmpRoute.children, roles, false);
+        tmpRoute.children = filterAsyncRoutes(tmpRoute.children, roles, false, fullPath);
       } else if (isRoot && tmpRoute.path.startsWith("/") && tmpRoute.component !== Layout) {
         tmpRoute.meta = {
           ...tmpRoute.meta,
@@ -67,7 +84,7 @@ const filterAsyncRoutes = (routes: RouteRecordRaw[], roles: string[], isRoot = t
           {
             ...tmpRoute,
             path: "",
-            name: `${String(tmpRoute.name)}Index`,
+            name: `${String(tmpRoute.name)}_Index`,
             meta: {
               ...tmpRoute.meta,
               hidden: true,
@@ -75,7 +92,7 @@ const filterAsyncRoutes = (routes: RouteRecordRaw[], roles: string[], isRoot = t
           },
         ];
         tmpRoute.component = Layout;
-        tmpRoute.name = `${String(tmpRoute.name)}Layout`;
+        tmpRoute.name = `${String(tmpRoute.name)}_Layout`;
         tmpRoute.redirect = route.path;
       }
 

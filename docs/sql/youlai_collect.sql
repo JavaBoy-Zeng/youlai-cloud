@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS collect_model (
   id BIGINT NOT NULL AUTO_INCREMENT,
   model_name VARCHAR(120) NOT NULL COMMENT '模型名称',
   model_code VARCHAR(100) NOT NULL COMMENT '模型编码',
+  target_data_source_id BIGINT DEFAULT NULL COMMENT '目标数据源 ID',
   target_table_name VARCHAR(120) DEFAULT NULL COMMENT '目标表名',
   status VARCHAR(32) NOT NULL DEFAULT 'enabled' COMMENT '状态: enabled, disabled',
   field_count INT NOT NULL DEFAULT 0 COMMENT '字段数',
@@ -41,6 +42,7 @@ CREATE TABLE IF NOT EXISTS collect_api (
   api_name VARCHAR(120) NOT NULL COMMENT '接口名称',
   api_code VARCHAR(100) NOT NULL COMMENT '接口编码',
   collect_type VARCHAR(32) NOT NULL COMMENT '采集方式: http, db, mq',
+  source_data_source_id BIGINT DEFAULT NULL COMMENT '来源数据源 ID',
   source_name VARCHAR(120) DEFAULT NULL COMMENT '来源名称',
   timeout_seconds INT DEFAULT 30 COMMENT '超时时间',
   max_fetch_count INT DEFAULT 1000 COMMENT '最大采集量',
@@ -54,14 +56,18 @@ CREATE TABLE IF NOT EXISTS collect_api (
   UNIQUE KEY uk_collect_api_code (api_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='采集接口主表';
 
-CREATE TABLE IF NOT EXISTS collect_db_source (
+CREATE TABLE IF NOT EXISTS collect_data_source (
   id BIGINT NOT NULL AUTO_INCREMENT,
   source_name VARCHAR(120) NOT NULL COMMENT '数据源名称',
-  db_type VARCHAR(32) NOT NULL COMMENT '数据库类型',
-  jdbc_url VARCHAR(500) NOT NULL COMMENT 'JDBC URL',
+  source_type VARCHAR(32) NOT NULL DEFAULT 'db' COMMENT '数据源类型: db, http, mq',
+  db_type VARCHAR(32) DEFAULT NULL COMMENT '数据库类型',
+  jdbc_url VARCHAR(500) DEFAULT NULL COMMENT 'JDBC URL',
   driver_class VARCHAR(200) DEFAULT NULL COMMENT '驱动类',
   username VARCHAR(120) DEFAULT NULL COMMENT '用户名',
   password_encrypt VARCHAR(500) DEFAULT NULL COMMENT '密码/密文',
+  base_url VARCHAR(500) DEFAULT NULL COMMENT 'HTTP Base URL',
+  auth_config LONGTEXT COMMENT '认证配置 JSON',
+  config_json LONGTEXT COMMENT '扩展连接配置 JSON',
   connect_timeout INT DEFAULT 10 COMMENT '连接超时秒数',
   query_timeout INT DEFAULT 30 COMMENT '查询超时秒数',
   pool_config LONGTEXT COMMENT '连接池配置 JSON',
@@ -74,12 +80,31 @@ CREATE TABLE IF NOT EXISTS collect_db_source (
   create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='DB 数据源连接配置表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='数据源连接配置表';
+
+CREATE TABLE IF NOT EXISTS collect_model_rule (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  rule_name VARCHAR(120) NOT NULL COMMENT '规则名称',
+  rule_code VARCHAR(140) NOT NULL COMMENT '规则编码',
+  model_id BIGINT NOT NULL COMMENT '模型 ID',
+  api_id BIGINT NOT NULL COMMENT '采集接口 ID',
+  mapping_json LONGTEXT COMMENT '字段映射 JSON',
+  transform_json LONGTEXT COMMENT '转换规则 JSON',
+  status VARCHAR(32) NOT NULL DEFAULT 'enabled' COMMENT '状态',
+  remark VARCHAR(500) DEFAULT NULL COMMENT '备注',
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_collect_model_rule_code (rule_code),
+  KEY idx_collect_model_rule_model_id (model_id),
+  KEY idx_collect_model_rule_api_id (api_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='采集模型接入规则表';
 
 CREATE TABLE IF NOT EXISTS collect_task (
   id BIGINT NOT NULL AUTO_INCREMENT,
   task_name VARCHAR(120) NOT NULL COMMENT '任务名称',
   task_code VARCHAR(100) NOT NULL COMMENT '任务编码',
+  rule_id BIGINT DEFAULT NULL COMMENT '模型接入规则 ID',
   model_id BIGINT NOT NULL COMMENT '模型 ID',
   api_id BIGINT NOT NULL COMMENT '采集接口 ID',
   schedule_type VARCHAR(32) NOT NULL DEFAULT 'manual' COMMENT '调度类型: manual, cron',

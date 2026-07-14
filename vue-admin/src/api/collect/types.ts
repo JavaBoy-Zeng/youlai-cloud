@@ -26,6 +26,7 @@ export interface CollectModel {
   id?: number;
   modelName: string;
   modelCode: string;
+  targetDataSourceId?: number;
   targetTableName?: string;
   status: string;
   fieldCount?: number;
@@ -38,6 +39,7 @@ export interface CollectApi {
   apiName: string;
   apiCode: string;
   collectType: string;
+  sourceDataSourceId?: number;
   sourceName?: string;
   timeoutSeconds?: number;
   maxFetchCount?: number;
@@ -47,14 +49,30 @@ export interface CollectApi {
   remark?: string;
 }
 
-export interface CollectDbSource {
+export interface CollectModelRule {
+  id?: number;
+  ruleName: string;
+  ruleCode: string;
+  modelId?: number;
+  apiId?: number;
+  mappingJson?: string;
+  transformJson?: string;
+  status: string;
+  remark?: string;
+}
+
+export interface CollectDataSource {
   id?: number;
   sourceName: string;
-  dbType: string;
-  jdbcUrl: string;
+  sourceType: string;
+  dbType?: string;
+  jdbcUrl?: string;
   driverClass?: string;
   username?: string;
   passwordEncrypt?: string;
+  baseUrl?: string;
+  authConfig?: string;
+  configJson?: string;
   connectTimeout?: number;
   queryTimeout?: number;
   poolConfig?: string;
@@ -70,6 +88,7 @@ export interface CollectTask {
   id?: number;
   taskName: string;
   taskCode: string;
+  ruleId?: number;
   modelId?: number;
   apiId?: number;
   scheduleType: string;
@@ -165,4 +184,6 @@ export interface CollectQuery extends PageQuery {
   keywords?: string;
   status?: string;
   collectType?: string;
+  modelId?: number;
+  apiId?: number;
 }

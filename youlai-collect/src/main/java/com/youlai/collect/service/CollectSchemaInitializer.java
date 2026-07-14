@@ -92,7 +92,7 @@
 //            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 //            """,
 //            """
-//            CREATE TABLE IF NOT EXISTS collect_db_source (
+//            CREATE TABLE IF NOT EXISTS collect_data_source (
 //              id BIGINT NOT NULL AUTO_INCREMENT,
 //              source_name VARCHAR(120) NOT NULL,
 //              db_type VARCHAR(32) NOT NULL,

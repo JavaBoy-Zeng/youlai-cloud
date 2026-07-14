@@ -18,10 +18,16 @@ public class CollectMessageConsumer {
     @Value("${collect.consumer.batch-size:5}")
     private int batchSize;
 
+    /**
+     * 注入采集服务，用于定时消费内部待处理消息。
+     */
     public CollectMessageConsumer(CollectService collectService) {
         this.collectService = collectService;
     }
 
+    /**
+     * 定时消费待处理采集消息，并通过运行锁避免并发重复消费。
+     */
     @Scheduled(fixedDelayString = "${collect.consumer.fixed-delay:5000}")
     public void consumePendingMessages() {
         if (!enabled || !running.compareAndSet(false, true)) {
